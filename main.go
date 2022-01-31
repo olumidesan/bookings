@@ -2,22 +2,24 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 )
 
 func Home(w http.ResponseWriter, r *http.Request) {
-	_, err := fmt.Fprint(w, "Home Page")
-
-	if err != nil {
-		fmt.Println(err)
-	}
+	renderTemplate(w, "home.page.tmpl")
 }
 
 func About(w http.ResponseWriter, r *http.Request) {
-	_, err := fmt.Fprint(w, "About Page")
+	renderTemplate(w, "about.page.tmpl")
+}
+
+func renderTemplate(w http.ResponseWriter, tmpl string) {
+	parsedTemplate, _ := template.ParseFiles("./templates/" + tmpl)
+	err := parsedTemplate.Execute(w, nil)
 
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error occured: ", err)
 	}
 }
 
@@ -25,5 +27,6 @@ func main() {
 	http.HandleFunc("/", Home)
 	http.HandleFunc("/about", About)
 
+	fmt.Println("Starting HTTP Server...")
 	_ = http.ListenAndServe(":3000", nil)
 }
