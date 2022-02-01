@@ -7,29 +7,37 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+
+	"github.com/olumidesan/bookings/pkg/config"
 )
 
 var functions = template.FuncMap{}
 
+var app *config.AppConfig
+
+func NewTemplates(a *config.AppConfig) {
+	app = a
+}
+
 func RenderTemplate(w http.ResponseWriter, tmpl string) {
 
-	tc, err := CreateTemplateCache()
-	if err != nil {
-		log.Fatal(err)
+	var tc map[string]*template.Template
+
+	if app.UseCache {
+		tc = app.TemplateCache
+	} else {
+		tc, _ = CreateTemplateCache()
 	}
 
 	t, exists := tc[tmpl]
 	if !exists {
-		log.Fatal(err)
+		log.Fatal("Could not get template from template cache")
 	}
 
 	buf := new(bytes.Buffer)
-	err = t.Execute(buf, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+	_ = t.Execute(buf, nil)
 
-	_, err = buf.WriteTo(w)
+	_, err := buf.WriteTo(w)
 
 	if err != nil {
 		fmt.Println("Error occured: ", err)
