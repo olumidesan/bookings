@@ -19,6 +19,9 @@ func routes(app *config.AppConfig) http.Handler {
 	// Protect against CSRF
 	mux.Use(NoSurf)
 
+	// Load session data
+	mux.Use(SessionLoad)
+
 	mux.Get("/", handlers.Repo.Home)
 	mux.Get("/about", handlers.Repo.About)
 
