@@ -1,13 +1,19 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
+
+	"github.com/justinas/nosurf"
 )
 
-func WriteToConsole(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Hit this page")
-		next.ServeHTTP(w, r)
+// NoSurf implements a check against CSRF
+func NoSurf(next http.Handler) http.Handler {
+	csrfHandler := nosurf.New(next)
+	csrfHandler.SetBaseCookie(http.Cookie{
+		HttpOnly: true,
+		Path:     "/",
+		Secure:   false,
+		SameSite: http.SameSiteLaxMode,
 	})
+	return csrfHandler
 }
