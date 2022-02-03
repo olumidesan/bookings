@@ -25,7 +25,7 @@ func main() {
 	app.InProduction = false
 
 	// 24 hour session
-	session := scs.New()
+	session = scs.New()
 	session.Lifetime = 24 * time.Hour
 	session.Cookie.Persist = true
 	session.Cookie.Secure = app.InProduction
